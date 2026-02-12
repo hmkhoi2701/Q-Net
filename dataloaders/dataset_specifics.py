@@ -36,7 +36,11 @@ def get_label_names(dataset):
         label_names[11] = 'PANCREAS'
         label_names[12] = 'AG_R'  # right adrenal gland
         label_names[13] = 'AG_L'  # left adrenal gland
-
+    elif 'CURVAS' in dataset:
+        label_names[0] = 'BG'
+        label_names[1] = '1'
+        label_names[2] = '2'
+        label_names[3] = '3'
     return label_names
 
 
@@ -67,6 +71,10 @@ def get_folds(dataset):
         FOLD[4] = set(range(24, 30))
         FOLD[4].update([0])
         return FOLD
+    elif dataset == 'CURVAS':
+        FOLD[0] = set()
+    elif dataset == 'CURVAS_TEST':
+        FOLD[0] = set(range(0,65))
     else:
         raise ValueError(f'Dataset: {dataset} not found')
 

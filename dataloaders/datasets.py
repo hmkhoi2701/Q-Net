@@ -25,7 +25,13 @@ class TestDataset(Dataset):
             self.image_dirs = glob.glob(os.path.join(args['data_dir'], 'chaos_MR_T2_normalized/image*'))
         elif args['dataset'] == 'SABS':
             self.image_dirs = glob.glob(os.path.join(args['data_dir'], 'sabs_CT_normalized/image*'))
-
+        elif args['dataset'] == 'CURVAS':
+            self.image_dirs = glob.glob('/home/khoi.ho/MICCAI_26/Personalized-FS/data/CURVAS/curvas_CT_normalized/image*')
+        elif args['dataset'] == 'CURVAS_TEST':
+            self.image_dirs = glob.glob('/home/khoi.ho/MICCAI_26/Personalized-FS/data/CURVAS/curvas_CT_normalized_test/image*')
+            
+        self.dataset = args['dataset']
+        self.rater = args['rater']
         self.image_dirs = sorted(self.image_dirs, key=lambda x: int(x.split('_')[-1].split('.nii.gz')[0]))
 
         # test fold!
@@ -47,9 +53,14 @@ class TestDataset(Dataset):
         img = sitk.GetArrayFromImage(sitk.ReadImage(img_path))
         img = (img - img.mean()) / img.std()
         img = np.stack(3 * [img], axis=1)
-
-        lbl = sitk.GetArrayFromImage(
-            sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_path.split('image_')[-1]))
+        
+        if 'CURVAS' in self.dataset:
+            img_id = img_path[img_path.find('_')+1:img_path.find('.nii.gz')]
+            lbl = sitk.GetArrayFromImage(
+                sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_id + '_' + self.rater + '.nii.gz'))
+        else:
+            lbl = sitk.GetArrayFromImage(
+                sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_path.split('image_')[-1]))
         lbl[lbl == 200] = 1
         lbl[lbl == 500] = 2
         lbl[lbl == 600] = 3
@@ -135,18 +146,25 @@ class TrainDataset(Dataset):
         elif args['dataset'] == 'SABS':
             self.image_dirs = glob.glob(os.path.join(args['data_dir'], 'sabs_CT_normalized/image*'))
             self.label_dirs = glob.glob(os.path.join(args['data_dir'], 'sabs_CT_normalized/label*'))
+        elif args['dataset'] == 'CURVAS':
+            self.image_dirs = glob.glob('/home/khoi.ho/MICCAI_26/Personalized-FS/data/CURVAS/curvas_CT_normalized/image*')
+            self.label_dirs = glob.glob('/home/khoi.ho/MICCAI_26/Personalized-FS/data/CURVAS/curvas_CT_normalized/label_*_1.nii.gz')
 
         self.image_dirs = sorted(self.image_dirs, key=lambda x: int(x.split('_')[-1].split('.nii.gz')[0]))
         self.label_dirs = sorted(self.label_dirs, key=lambda x: int(x.split('_')[-1].split('.nii.gz')[0]))
-        self.sprvxl_dirs = glob.glob(os.path.join(args['data_dir'], 'supervoxels_' + str(args['n_sv']), 'super*'))
+        if args['dataset'] == 'CURVAS':
+            self.sprvxl_dirs = glob.glob('/home/khoi.ho/MICCAI_26/Personalized-FS/data/CURVAS/curvas_CT_normalized/super*')
+        else:
+            self.sprvxl_dirs = glob.glob(os.path.join(args['data_dir'], 'supervoxels_' + str(args['n_sv']), 'super*'))
         self.sprvxl_dirs = sorted(self.sprvxl_dirs, key=lambda x: int(x.split('_')[-1].split('.nii.gz')[0]))
 
         # remove test fold!
         self.FOLD = get_folds(args['dataset'])
-        self.image_dirs = [elem for idx, elem in enumerate(self.image_dirs) if idx not in self.FOLD[args['eval_fold']]]
-        self.label_dirs = [elem for idx, elem in enumerate(self.label_dirs) if idx not in self.FOLD[args['eval_fold']]]
-        self.sprvxl_dirs = [elem for idx, elem in enumerate(self.sprvxl_dirs) if
-                            idx not in self.FOLD[args['eval_fold']]]
+        if self.FOLD:
+            self.image_dirs = [elem for idx, elem in enumerate(self.image_dirs) if idx not in self.FOLD[args['eval_fold']]]
+            self.label_dirs = [elem for idx, elem in enumerate(self.label_dirs) if idx not in self.FOLD[args['eval_fold']]]
+            self.sprvxl_dirs = [elem for idx, elem in enumerate(self.sprvxl_dirs) if
+                                idx not in self.FOLD[args['eval_fold']]]
 
         # read images
         if self.read:

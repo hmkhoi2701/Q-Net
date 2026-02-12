@@ -17,7 +17,7 @@ class Res101Encoder(nn.Module):
         # using pretrained model's weights
         if pretrained_weights == 'deeplabv3':
             self.pretrained_weights = torch.load(
-                "/home/SQQ/.cache/torch/hub/checkpoints/deeplabv3_resnet101_coco-586e9e4e.pth", map_location='cpu')
+                "/home/khoi.ho/MICCAI_26/benchmarks/Self-supervised-Fewshot-Medical-Image-Segmentation/pretrained_model/hub/checkpoints/deeplabv3_resnet101_coco-586e9e4e.pth", map_location='cpu')
         elif pretrained_weights == 'resnet101':
             self.pretrained_weights = torch.load("/home/SQQ/.cache/torch/hub/checkpoints/resnet101-63fe2227.pth",
                                                  map_location='cpu')

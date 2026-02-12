@@ -3,7 +3,7 @@ Image Transformation
 Code originally from Ouyang et al. (used in the 2D setting)
 """
 
-from collections import Sequence
+from collections.abc import Sequence
 import cv2
 import numpy as np
 import scipy
