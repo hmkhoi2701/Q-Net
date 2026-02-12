@@ -52,7 +52,7 @@ def main(_run, _config, _log):
     torch.set_num_threads(1)
 
     _log.info(f'Create model...')
-    model = FewShotSeg()
+    model = FewShotSeg(alpha=_config['alpha'])
     model = model.cuda()
     model.train()
 

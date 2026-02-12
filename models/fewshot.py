@@ -12,7 +12,7 @@ from .encoder import Res101Encoder
 
 class FewShotSeg(nn.Module):
 
-    def __init__(self, pretrained_weights="deeplabv3", alpha=0.9):
+    def __init__(self, pretrained_weights="deeplabv3", alpha=0.6):
         super().__init__()
 
         # Encoder

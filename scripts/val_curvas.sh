@@ -4,12 +4,12 @@ GPUID1=0
 export CUDA_VISIBLE_DEVICES=$GPUID1
 
 ###### Shared configs ######
-DATASET='CHAOST2'
+DATASET='CURVAS_TEST'
 #DATASET='CMR'
 NWORKER=16
 RUNS=1
 ALL_EV=(0) # 5-fold cross validation (0, 1, 2, 3, 4)
-TEST_LABEL=[1,2,3,4]
+TEST_LABEL='[2]'
 ###### Training configs ######
 NSTEP=30000
 DECAY=0.98
@@ -18,7 +18,7 @@ MAX_ITER=1000 # defines the size of an epoch
 SNAPSHOT_INTERVAL=10000 # interval for saving snapshot
 SEED=2021
 
-N_PART=3 # defines the number of chunks for evaluation
+N_PART=1 # defines the number of chunks for evaluation
 ALL_SUPP=(2) # CHAOST2: 0-4, CMR: 0-7
 RATER=1
 echo ========================================================================
@@ -35,7 +35,7 @@ then
 fi
 SUPP_IDX=-1
     # RELOAD_PATH='please feed the absolute path to the trained weights here' # path to the reloaded model
-    RELOAD_MODEL_PATH="/home/SQQ/fsmis/QNet/exps_on_CURVAS_multi_91/QNet_train_CURVAS_cv${EVAL_FOLD}/1/snapshots/30000.pth"
+    RELOAD_MODEL_PATH="/home/khoi.ho/MICCAI_26/benchmarks/Q-Net/exps_on_CURVAS_multi_91/QNet_train_CURVAS_cv0/5/snapshots/50000.pth"
     python3 test.py with \
     mode="test" \
     dataset=$DATASET \
@@ -50,6 +50,7 @@ SUPP_IDX=-1
     reload_model_path=$RELOAD_MODEL_PATH \
     save_snapshot_every=$SNAPSHOT_INTERVAL \
     lr_step_gamma=$DECAY \
-    path.log_dir=$LOGDIR
+    path.log_dir=$LOGDIR \
+    rater=$RATER
 
 

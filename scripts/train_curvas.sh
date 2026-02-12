@@ -9,7 +9,7 @@ NWORKER=16
 RUNS=1
 ALL_EV=(0) # 5-fold cross validation (0, 1, 2, 3, 4)
 TEST_LABEL='[2]'
-EXCLUDE_LABEL='[2]'
+EXCLUDE_LABEL='[]'
 USE_GT=False
 ###### Training configs ######
 NSTEP=50000
@@ -45,5 +45,6 @@ EVAL_FOLD=0
   seed=$SEED \
   save_snapshot_every=$SNAPSHOT_INTERVAL \
   lr_step_gamma=$DECAY \
-  path.log_dir=$LOGDIR
+  path.log_dir=$LOGDIR \
+  alpha=0.6
 

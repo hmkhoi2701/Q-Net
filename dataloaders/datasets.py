@@ -36,7 +36,8 @@ class TestDataset(Dataset):
 
         # test fold!
         self.FOLD = get_folds(args['dataset'])
-        self.image_dirs = [elem for idx, elem in enumerate(self.image_dirs) if idx in self.FOLD[args['eval_fold']]]
+        if self.FOLD:
+            self.image_dirs = [elem for idx, elem in enumerate(self.image_dirs) if idx in self.FOLD[args['eval_fold']]]
 
         # split into support/query
         idx = np.arange(len(self.image_dirs))
@@ -55,9 +56,9 @@ class TestDataset(Dataset):
         img = np.stack(3 * [img], axis=1)
         
         if 'CURVAS' in self.dataset:
-            img_id = img_path[img_path.find('_')+1:img_path.find('.nii.gz')]
+            img_id = img_path[img_path.rfind('_')+1:img_path.find('.nii.gz')]
             lbl = sitk.GetArrayFromImage(
-                sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_id + '_' + self.rater + '.nii.gz'))
+                sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_id + '_' + str(self.rater) + '.nii.gz'))
         else:
             lbl = sitk.GetArrayFromImage(
                 sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_path.split('image_')[-1]))
@@ -96,9 +97,14 @@ class TestDataset(Dataset):
         img = sitk.GetArrayFromImage(sitk.ReadImage(img_path))
         img = (img - img.mean()) / img.std()
         img = np.stack(3 * [img], axis=1)
-
-        lbl = sitk.GetArrayFromImage(
-            sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_path.split('image_')[-1]))
+        
+        if 'CURVAS' in self.dataset:
+            img_id = img_path[img_path.rfind('_')+1:img_path.find('.nii.gz')]
+            lbl = sitk.GetArrayFromImage(
+                sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_id + '_' + str(self.rater) + '.nii.gz'))
+        else:
+            lbl = sitk.GetArrayFromImage(
+                sitk.ReadImage(img_path.split('image_')[0] + 'label_' + img_path.split('image_')[-1]))
         lbl[lbl == 200] = 1
         lbl[lbl == 500] = 2
         lbl[lbl == 600] = 3

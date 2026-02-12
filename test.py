@@ -52,8 +52,9 @@ def main(_run, _config, _log):
     model.load_state_dict(torch.load(_config['reload_model_path'], map_location='cpu'))
 
     _log.info(f'Load data...')
+    print(_config['rater'])
     data_config = {
-        'data_dir': _config['path'][_config['dataset']]['data_dir'],
+        # 'data_dir': _config['path'][_config['dataset']]['data_dir'],
         'dataset': _config['dataset'],
         'n_shot': _config['n_shot'],
         'n_way': _config['n_way'],
@@ -64,6 +65,7 @@ def main(_run, _config, _log):
         'min_size': _config['min_size'],
         'max_slices': _config['max_slices'],
         'supp_idx': _config['supp_idx'],
+        'rater': _config['rater']
     }
     test_dataset = TestDataset(data_config)
     test_loader = DataLoader(test_dataset,
@@ -138,7 +140,7 @@ def main(_run, _config, _log):
 
                 # Log.
                 _log.info(
-                    f'Tested query volume: {sample["id"][0][len(_config["path"][_config["dataset"]]["data_dir"]):]}.')
+                    f'Tested query volume: {sample["id"][0]}.')
                 _log.info(f'Dice score: {scores.patient_dice[-1].item()}')
 
                 # Save predictions.
